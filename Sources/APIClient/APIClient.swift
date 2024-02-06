@@ -1,8 +1,8 @@
 import Foundation
 import Combine
 
-struct APIClient {
-    static func dispatch<ResultType: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<ResultType, APIError> {
+public struct APIClient {
+    public static func dispatch<ResultType: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<ResultType, APIError> {
         let request = Self.createURL(from: endpoint)
         
         return URLSession.shared.dataTaskPublisher(for: request)

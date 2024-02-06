@@ -6,12 +6,12 @@ Light-weight API rest client
 
 ```swift
 func usage() {
-    let getChuckNorrisJokes: AnyPublisher<[Joke], APIError> = APIClient.dispatch(MockEndpoint.getRandom)
+    let getChuckNorrisJoke: AnyPublisher<Joke, APIError> = APIClient.dispatch(MockEndpoint.getRandom)
 
-    getChuckNorrisJokes
+    getChuckNorrisJoke
         .sink { completion in
             print(completion)
-        } receiveValue: { jokes in
+        } receiveValue: { joke in
             print(jokes)
         }
         .store(in: &cancellables)
