@@ -1,6 +1,6 @@
 import Foundation
 
-protocol APIEndpoint {
+public protocol APIEndpoint {
     // Required
     var baseURL: URL { get }
     var path: String { get }
@@ -14,7 +14,7 @@ protocol APIEndpoint {
 }
 
 // MARK: - Default Behavior
-extension APIEndpoint {
+public extension APIEndpoint {
     var decoder: JSONDecoder { JSONDecoder() }
     var parameters: APIParameters { return [:] }
     var requestBody: APIBody { return [:] }
