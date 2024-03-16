@@ -7,8 +7,12 @@ public struct APIClient {
         
         return URLSession.shared.dataTaskPublisher(for: request)
             .tryMap { data, response in
-                guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                guard let httpResponse = response as? HTTPURLResponse else {
                     throw APIError.invalidResponse
+                }
+                
+                guard httpResponse.statusCode >= 200, httpResponse.statusCode < 300 else {
+                    throw APIError.requestFailed(code: httpResponse.statusCode)
                 }
                 
                 return data
@@ -16,10 +20,10 @@ public struct APIClient {
             .decode(type: ResultType.self, decoder: endpoint.decoder)
             .mapError { error in
                 if let decodingError = error as? DecodingError {
-                    return APIError.decodingFailed(decodingError)
+                    return APIError.decodingFailed(error: decodingError)
                 }
                 
-                return APIError.requestFailed(error)
+                return APIError.error(error: error)
             }
             .receive(on: RunLoop.main)
             .eraseToAnyPublisher()
