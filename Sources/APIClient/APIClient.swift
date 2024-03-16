@@ -3,20 +3,8 @@ import Foundation
 
 public struct APIClient {
     public static func dispatch<ResultType: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<ResultType, APIError> {
-        let request = Self.createURL(from: endpoint)
-        
-        return URLSession.shared.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    throw APIError.invalidResponse
-                }
-                
-                guard httpResponse.statusCode >= 200, httpResponse.statusCode < 300 else {
-                    throw APIError.requestFailed(code: httpResponse.statusCode)
-                }
-                
-                return data
-            }
+        Self.createURL(from: endpoint)
+            .dataPublisher()
             .decode(type: ResultType.self, decoder: endpoint.decoder)
             .mapError { error in
                 if let decodingError = error as? DecodingError {
@@ -60,5 +48,24 @@ public struct APIClient {
         
         request.allHTTPHeaderFields = headers
         return request
+    }
+}
+
+// MARK: - Creates a dataTaskPublisher given the current URLRequest
+private extension URLRequest {
+    func dataPublisher() -> AnyPublisher<Data, Error> {
+        URLSession.shared.dataTaskPublisher(for: self)
+            .tryMap { data, response in
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    throw APIError.invalidResponse
+                }
+                
+                guard httpResponse.statusCode >= 200, httpResponse.statusCode < 300 else {
+                    throw APIError.requestFailed(code: httpResponse.statusCode)
+                }
+                
+                return data
+            }
+            .eraseToAnyPublisher()
     }
 }
