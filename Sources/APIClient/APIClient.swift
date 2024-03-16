@@ -48,15 +48,17 @@ public struct APIClient {
         request.httpMethod = "\(endpoint.method)".uppercased()
         
         // Add headers
-        request.allHTTPHeaderFields = endpoint.headers
+        var headers = endpoint.headers
         
         // Add request body
         if !endpoint.requestBody.isEmpty {
             if let jsonData = try? JSONSerialization.data(withJSONObject: endpoint.requestBody) {
                 request.httpBody = jsonData
+                headers["Content-Type"] = "application/json"
             }
         }
         
+        request.allHTTPHeaderFields = headers
         return request
     }
 }
