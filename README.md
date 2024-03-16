@@ -1,8 +1,18 @@
 # APIClient
 
-Light-weight API rest client
+Light-weight API rest client built using Combine
 
-### How to use
+## Swift Package Manager
+
+Add the Swift package to your Package.swift file:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/cristhianleonli/APIClient.git", from: "1.0.0")
+]
+```
+
+## Usage
 
 ```swift
 func usage() {
@@ -64,3 +74,7 @@ enum MockEndpoint: APIEndpoint {
 }
 
 ```
+
+## Contribution
+
+All contributors are welcome.
