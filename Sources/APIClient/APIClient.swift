@@ -1,5 +1,5 @@
-import Foundation
 import Combine
+import Foundation
 
 public struct APIClient {
     public static func dispatch<ResultType: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<ResultType, APIError> {

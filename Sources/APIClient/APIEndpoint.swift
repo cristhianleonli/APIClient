@@ -1,12 +1,12 @@
 import Foundation
 
 public protocol APIEndpoint {
-    // Required
+    // Required config
     var baseURL: URL { get }
     var path: String { get }
     var method: HTTPMethod { get }
     
-    // Optional conformances
+    // Optional config
     var decoder: JSONDecoder { get }
     var parameters: APIParameters { get }
     var requestBody: APIBody { get }

@@ -6,6 +6,4 @@ public enum HTTPMethod {
     case put
     case patch
     case delete
-    
-    // other http methods that aren't usually required.
 }
