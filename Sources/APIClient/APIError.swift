@@ -6,7 +6,8 @@ public typealias APIHeaders = [String: String]
 
 public enum APIError: Error {
     case invalidURL
-    case requestFailed(Error)
     case invalidResponse
-    case decodingFailed(Error)
+    case requestFailed(code: Int)
+    case error(error: Error)
+    case decodingFailed(error: Error)
 }
