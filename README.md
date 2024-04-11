@@ -1,6 +1,6 @@
 # APIClient
 
-Light-weight API rest client built using Combine
+Light-weight API rest client built using Combine.
 
 ## Swift Package Manager
 
