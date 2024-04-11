@@ -15,7 +15,7 @@ dependencies: [
 ## Usage
 
 ```swift
-func usage() {
+func example() {
     let publisher: AnyPublisher<[Response], APIError> = APIClient.dispatch(Request())
     
     publisher
@@ -48,4 +48,4 @@ let publisher: AnyPublisher<JSON, APIError> = APIClient.dispatch(Request())
 
 ## Contribution
 
-All contributors are welcome.
+All contributors are welcome, simply create a PR.
