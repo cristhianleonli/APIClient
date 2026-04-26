@@ -8,6 +8,6 @@ public enum APIError: Error {
     case invalidURL
     case invalidResponse
     case requestFailed(code: Int)
-    case error(error: Error)
     case decodingFailed(error: Error)
+    case other(error: Error)
 }

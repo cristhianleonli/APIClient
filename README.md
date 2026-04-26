@@ -1,38 +1,45 @@
 # APIClient
 
-Light-weight API rest client built using Combine.
+Lightweight REST API client built using modern Swift Concurrency (async/await).
 
-## Swift Package Manager
+### Swift Package Manager
 
 Add the Swift package to your Package.swift file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/cristhianleonli/APIClient.git", .upToNextMajor(from: "0.0.1"))
+    .package(url: "https://github.com/cristhianleonli/APIClient.git", .upToNextMajor(from: "0.0.2"))
 ]
 ```
 
 ## Usage
 
-```swift
-func example() {
-    let publisher: AnyPublisher<[Response], APIError> = APIClient.dispatch(Request())
-    
-    publisher
-        .sink { completion in
-        print(completion)
-    } receiveValue: { value in
-        print(value)
-    }
-    .store(in: &cancellables)
-}
+### Basic Request
 
+```swift
+func example() async {
+    do {
+        let response: [Response] = try await APIClient.dispatch(Request())
+        print(response)
+    } catch {
+        print(error)
+    }
+}
+```
+
+### Define an endpoint
+
+```swift
 struct Request: APIEndpoint {
     let baseURL: URL = URL(string: "https://jsonplaceholder.typicode.com")!
     let method: HTTPMethod  = .get
     let path: String = "/todos"
 }
+```
 
+### Define a Response model
+
+```swift
 struct Response: Decodable {
     let id: Int
     let title: String
@@ -40,12 +47,18 @@ struct Response: Decodable {
 }
 ```
 
-In case you want to use JSON raw data as response, you can use [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON)
+### Error Handling
+
+APIClient uses Swift's native error handling via throws.
 
 ```swift
-let publisher: AnyPublisher<JSON, APIError> = APIClient.dispatch(Request())
+do {
+    let result: [Response] = try await APIClient.dispatch(Request())
+} catch {
+    // Handle error appropriately
+}
 ```
 
 ## Contribution
 
-All contributors are welcome, simply create a PR.
+Contributions are welcome. Feel free to open an issue or submit a PR.

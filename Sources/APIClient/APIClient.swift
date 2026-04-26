@@ -2,19 +2,22 @@ import Combine
 import Foundation
 
 public struct APIClient {
-    public static func dispatch<ResultType: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<ResultType, APIError> {
-        Self.createURL(from: endpoint)
-            .dataPublisher()
-            .decode(type: ResultType.self, decoder: endpoint.decoder)
-            .mapError { error in
-                if let decodingError = error as? DecodingError {
-                    return APIError.decodingFailed(error: decodingError)
-                }
-                
-                return APIError.error(error: error)
-            }
-            .receive(on: RunLoop.main)
-            .eraseToAnyPublisher()
+    public static func dispatch<ResultType: Decodable>(_ endpoint: APIEndpoint) async throws -> ResultType {
+        let url = createURL(from: endpoint)
+        let (data, response) = try await URLSession.shared.data(for: url)
+        try validate(response)
+        
+        return try endpoint.decoder.decode(ResultType.self, from: data)
+    }
+    
+    private static func validate(_ response: URLResponse) throws {
+        guard let http = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        
+        guard 200..<300 ~= http.statusCode else {
+            throw APIError.requestFailed(code: http.statusCode)
+        }
     }
     
     private static func createURL(from endpoint: APIEndpoint) -> URLRequest {
@@ -33,7 +36,7 @@ public struct APIClient {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "\(endpoint.method)".uppercased()
+        request.httpMethod = endpoint.method.rawValue
         
         // Add headers
         var headers = endpoint.headers
@@ -48,24 +51,5 @@ public struct APIClient {
         
         request.allHTTPHeaderFields = headers
         return request
-    }
-}
-
-// MARK: - Creates a dataTaskPublisher given the current URLRequest
-private extension URLRequest {
-    func dataPublisher() -> AnyPublisher<Data, Error> {
-        URLSession.shared.dataTaskPublisher(for: self)
-            .tryMap { data, response in
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    throw APIError.invalidResponse
-                }
-                
-                guard httpResponse.statusCode >= 200, httpResponse.statusCode < 300 else {
-                    throw APIError.requestFailed(code: httpResponse.statusCode)
-                }
-                
-                return data
-            }
-            .eraseToAnyPublisher()
     }
 }
